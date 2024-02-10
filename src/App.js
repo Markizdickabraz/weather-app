@@ -1,11 +1,13 @@
-import './App.css';
 import WeatherApp from './components/WeaterApp/WeatherApp';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
-    <div className="App">
-     <WeatherApp />
-    </div>
+    <>
+      <WeatherApp />
+      <ToastContainer />
+    </>
   );
 }
 
