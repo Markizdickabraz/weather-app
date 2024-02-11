@@ -7,81 +7,119 @@ import rain_icon from '../Assets/rain.png';
 import snow_icon from '../Assets/snow.png';
 import wind_icon from '../Assets/wind.png';
 import humidity_icon from '../Assets/humidity.png';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { RotatingLines } from 'react-loader-spinner';
+import sun_bgc from '../Assets/sunny.gif';
+import snow_bgc from '../Assets/snow.gif';
+import rain_bgc from '../Assets/rain.gif';
+import cloud_bgc from '../Assets/cloud.gif';
+import drizzle_bgc from '../Assets/drizzle.gif';
 
 
 const WeatherApp = () => {
 
     let api_key = 'f8cf14c8ed38868411e911ca04ecf0e1';
     const [wicon, setWicon] = useState(cloud_icon);
+    const [weather, setWeather] = useState([]);
+    const [background, setBackground] = useState(sun_bgc);
+    const [city, setCity] = useState('kryvyi rih');
 
-const search = async () => {
-    const element = document.getElementsByClassName('city__input');
-    if (element[0].value === '') {
-        return 0;
-    }
-    try {
-        let url = `https://api.openweathermap.org/data/2.5/weather?q=${element[0].value}&units=Metric&appid=${api_key}`;
-        let response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('City not found');
-        };
-
-        let data = await response.json();
-        const humidity = document.getElementsByClassName('humidity__percent');
-        const wind = document.getElementsByClassName('wind__rate');
-        const tempertature = document.getElementsByClassName('weather__temp');
-        const location = document.getElementsByClassName('weather__location');
-        console.log(data);
-
-        humidity[0].innerHTML = data.main.humidity + " %";
-        wind[0].innerHTML = Math.floor(data.wind.speed) + " km/h";
-        tempertature[0].innerHTML = Math.floor(data.main.temp) + " °c";
-        location[0].innerHTML = data.name;
-
-        if (data.weather[0].icon === '01d' || data.weather[0].icon === '01n') {
-            setWicon(clear_icon);
-        } else if (data.weather[0].icon === '02d' || data.weather[0].icon === '02n') {
-            setWicon(cloud_icon);
-        } else if (data.weather[0].icon === '03d' || data.weather[0].icon === '03n') {
-            setWicon(drizzle_icon);
-        } else if (data.weather[0].icon === '04d' || data.weather[0].icon === '034n') {
-            setWicon(drizzle_icon);
-        } else if (data.weather[0].icon === '09d' || data.weather[0].icon === '09n') {
-            setWicon(rain_icon);
-        } else if (data.weather[0].icon === '10d' || data.weather[0].icon === '10n') {
-            setWicon(rain_icon);
-        } else if (data.weather[0].icon === '13d' || data.weather[0].icon === '13n') {
-            setWicon(snow_icon);
-        } else {
-            setWicon(clear_icon);
-        }
-    } catch (error) {
-        toast.error(error.message);
+    const handleChange = (e) => {
+        setCity(e.target.value);
     };
+
+      const fetchWeather = async () => {
+        try {
+            let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=Metric&appid=${api_key}`;
+            let response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Failed to fetch weather data');
+            }
+            let result = await response.json();
+            setWeather(result);
+
+             if (result.weather[0].icon === '01d' || result.weather[0].icon === '01n') {
+                 setWicon(clear_icon);
+                 setBackground(sun_bgc);
+        } else if (result.weather[0].icon === '02d' || result.weather[0].icon === '02n') {
+                 setWicon(cloud_icon);
+                 setBackground(cloud_bgc);
+        } else if (result.weather[0].icon === '03d' || result.weather[0].icon === '03n') {
+                 setWicon(drizzle_icon);
+                 setBackground(drizzle_bgc);
+        } else if (result.weather[0].icon === '04d' || result.weather[0].icon === '034n') {
+                 setWicon(drizzle_icon);
+                 setBackground(drizzle_bgc);
+        } else if (result.weather[0].icon === '09d' || result.weather[0].icon === '09n') {
+                 setWicon(rain_icon);
+                 setBackground(rain_bgc);
+        } else if (result.weather[0].icon === '10d' || result.weather[0].icon === '10n') {
+                 setWicon(rain_icon);
+                 setBackground(rain_bgc);
+        } else if (result.weather[0].icon === '13d' || result.weather[0].icon === '13n') {
+                 setWicon(snow_icon);
+                 setBackground(snow_bgc);
+        } else {
+                 setWicon(clear_icon);
+                 setBackground(sun_bgc);
+        }
+        } catch (error) {
+            if (error.message === 'Nothing to geocode') {
+                toast.error('Nothing to geocode');
+            }
+
+            toast.error(error.message);
+        }
+    };
+    
+    useEffect(() => {
+    fetchWeather();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
+
+    const search = async (city) => {
+        fetchWeather(city);
 };
 
-
-  return (
-    <div className='container'>
-          <div className="top__bar">
-              <input type="text" className="city__input" placeholder='Search' />
-              <div className="search__icon">
-                  <img src={search_icon} alt="search icon" onClick={()=>{search()}} />
-              </div>
-          </div>
+    return (
+        <>
+            {weather.length === 0 ? <div className='container' style={{ display: "flex", justifyContent: "center", alignItems: 'center' }}>
+                <RotatingLines
+                                    visible={true}
+                                    height="96"
+                                    width="96"
+                                    color="grey"
+                                    strokeWidth="5"
+                                    animationDuration="0.75"
+                                    ariaLabel="rotating-lines-loading"
+                                    wrapperStyle={{}}
+                                    wrapperClass=""
+        />
+        </div> :
+                <div className='container' style={{background:`center / cover no-repeat url(${background})`, }}>
+                    <form className="top__bar" onSubmit={(e) => {
+                        e.preventDefault();
+                        search(e);
+}} >
+ 
+              <input type="text" className="city__input" value={city} placeholder='Search' onChange={handleChange} />
+              <button type='submit' className="search__icon">
+                  <img src={search_icon} alt="search icon" />
+              </button>
+              
+          </form>
           <div className="weather__img">
               <img src={wicon} alt=" cloud icon" />
           </div>
-          <div className="weather__temp">24 °c
+          <div className="weather__temp">{Math.floor(weather.main.temp)} °c
           </div>
-          <div className="weather__location">London</div>
+                    <div className="weather__location">{weather.name}</div>
           <div className="data__container">
               <div className="element">
                   <img src={humidity_icon} alt="humidity icon" className="icon" />
                   <div className="data">
-                      <div className="humidity__percent">64 %</div>
+                      <div className="humidity__percent">{weather.main.humidity} %</div>
                       <div className="text">Humidity</div>
                   </div>
               </div>
@@ -89,12 +127,14 @@ const search = async () => {
                 <div className="element">
                   <img src={wind_icon} alt="wind icon" className="icon" />
                   <div className="data">
-                      <div className="wind__rate">18 km/h</div>
+                      <div className="wind__rate">{Math.floor(weather.wind.speed)} km/h</div>
                       <div className="text">Wind Speed</div>
                   </div>
               </div>
           </div>
-    </div>
+            </div>
+            }
+            </>
   )
 }
 
