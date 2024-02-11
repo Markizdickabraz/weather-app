@@ -48,7 +48,7 @@ const WeatherApp = () => {
         } else if (result.weather[0].icon === '03d' || result.weather[0].icon === '03n') {
                  setWicon(drizzle_icon);
                  setBackground(drizzle_bgc);
-        } else if (result.weather[0].icon === '04d' || result.weather[0].icon === '034n') {
+        } else if (result.weather[0].icon === '04d' || result.weather[0].icon === '04n') {
                  setWicon(drizzle_icon);
                  setBackground(drizzle_bgc);
         } else if (result.weather[0].icon === '09d' || result.weather[0].icon === '09n') {
@@ -82,6 +82,8 @@ const WeatherApp = () => {
         fetchWeather(city);
 };
 
+console.log(weather)
+    
     return (
         <>
             {weather.length === 0 ? <div className='container' style={{ display: "flex", justifyContent: "center", alignItems: 'center' }}>
