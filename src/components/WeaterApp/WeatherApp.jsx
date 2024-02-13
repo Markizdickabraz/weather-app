@@ -20,16 +20,36 @@ import drizzle_bgc from '../Assets/drizzle.gif';
 const WeatherApp = () => {
 
     let api_key = 'f8cf14c8ed38868411e911ca04ecf0e1';
+    let geo_key = 'AIzaSyCzKnN1VGPeknC0Qs6Fpt0Ie-nQ4P-_6Z8';
     const [wicon, setWicon] = useState(cloud_icon);
     const [weather, setWeather] = useState([]);
     const [background, setBackground] = useState(sun_bgc);
-    const [city, setCity] = useState('kryvyi rih');
-
+    const [city, setCity] = useState('');
+    const [locationCity, setLocationCity] = useState('');
+    
     const handleChange = (e) => {
         setCity(e.target.value);
     };
-
-      const fetchWeather = async () => {
+    
+    
+    const fetchCoordinate = async () => {
+            navigator.geolocation.getCurrentPosition(async(position) => {
+            const { latitude, longitude } = position.coords;
+                try {
+                    const fetchCityResponse = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${geo_key}`);
+                    const fetchCityData = await fetchCityResponse.json();
+                    const city = await fetchCityData.results[0].address_components.find(
+                    (component) => component.types.includes("locality")
+                    ).long_name;
+                    setLocationCity(city);
+                    setCity(city);
+                } catch (error) {
+                    toast.error(error);
+                }
+             });
+    };
+    
+    const fetchWeather = async () => {
         try {
             let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=Metric&appid=${api_key}`;
             let response = await fetch(url);
@@ -73,16 +93,24 @@ const WeatherApp = () => {
         }
     };
     
-    useEffect(() => {
-    fetchWeather();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+ useEffect(() => {
+    const fetchData = async () => {
+        await fetchCoordinate();
+    };
+     fetchData();
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, []);
 
+useEffect(() => {
+    if (city) {
+        fetchWeather(city);
+    }
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [locationCity]);
+    
     const search = async (city) => {
         fetchWeather(city);
 };
-
-console.log(weather)
     
     return (
         <>
