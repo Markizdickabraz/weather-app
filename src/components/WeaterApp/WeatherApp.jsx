@@ -36,7 +36,7 @@ const WeatherApp = () => {
     const [background, setBackground] = useState(sun_bgc);
     const [city, setCity] = useState('');
     const [locationCity, setLocationCity] = useState('');
-    
+
     const handleChange = (e) => {
         setCity(e.target.value);
     };
@@ -78,8 +78,7 @@ const WeatherApp = () => {
             } else if (weatherIcon === '02d') {
                 setWicon(cloud_icon);
                 setBackground(cloud_bgc);
-            }
-            else if (weatherIcon === '02n') {
+            } else if (weatherIcon === '02n') {
                 setWicon(cloud_moon);
                 setBackground(night_cloud_bgc);
             } else if (weatherIcon === '03d') {
@@ -92,7 +91,7 @@ const WeatherApp = () => {
                 setWicon(drizzle_icon);
                 setBackground(day_drizzle);
             } else if (weatherIcon === '04n') {
-                setWicon(drizzle_icon);
+                setWicon(rain_moon);
                 setBackground(drizzle_bgc);
             } else if (weatherIcon === '09d') {
                 setWicon(rain_icon);
@@ -100,34 +99,34 @@ const WeatherApp = () => {
             } else if (weatherIcon === '09n') { 
                  setWicon(rain_moon);
                 setBackground(night_rain_bgc);
-        } else if (weatherIcon === '10d') {
+            } else if (weatherIcon === '10d') {
                 setWicon(rain_icon);
                 setBackground(day_rain);
             } else if (weatherIcon === '10n') { 
                  setWicon(rain_moon);
                 setBackground(night_rain_bgc);
-        } else if (weatherIcon === '11d') {
+            } else if (weatherIcon === '11d') {
                 setWicon(lightning_day);
                 setBackground(lightning_bgc);
             } else if (weatherIcon === '11n') { 
                  setWicon(lightning_moon);
                 setBackground(lightning_bgc);
-        } else if (weatherIcon === '13d') {
+            } else if (weatherIcon === '13d') {
                 setWicon(snow_icon);
                 setBackground(snow_bgc);
             } else if (weatherIcon === '13n') { 
                  setWicon(snow_icon);
                 setBackground(snow_bgc);
-        } else if (weatherIcon === '50d') {
+            } else if (weatherIcon === '50d') {
                 setWicon(clear_icon);
                 setBackground(mist_bgc);
             } else if (weatherIcon === '50n') { 
                  setWicon(clear_moon);
                 setBackground(mist_bgc);
-        } else {
+            } else {
                  setWicon(clear_icon);
                  setBackground(sun_bgc);
-        }
+            }
         } catch (error) {
             if (error.message === 'Nothing to geocode') {
                 toast.error('Nothing to geocode');
